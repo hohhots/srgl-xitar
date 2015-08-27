@@ -1,0 +1,368 @@
+/// <reference path="jquery.d.ts" />
+/// <reference path='jqueryui.d.ts' />
+
+class Cell {
+    xitarIndex: number;
+    hasHit: boolean;
+    element: HTMLElement;
+
+    constructor(public row: number, public column: number) {
+        this.element = $("<div></div>")[0];
+    }
+
+    static parseCellLocation(pos: string) {
+        var indices: string[] = pos.split(",");
+        return { 'row': parseInt(indices[0]), 'column': parseInt(indices[1]) };
+    }
+
+    cellLocation() {
+        return "" + this.row + "," + this.column;
+    }
+}
+
+//states = {"normal","clicked","lastMoved",};
+
+class Xitar {
+    column = -1;
+    row = 0;
+    amid = true;
+    //state:States;
+    element: HTMLElement;
+
+    constructor() {
+        this.element = $("<img />")[0];
+    }
+
+    updatePosition(row: number, column: number) {
+        this.row = row;
+        this.column = column;
+        this.updateLayout();
+    }
+
+    updateLayout() {
+        this.element.style.left = "" + (this.column * 12.5) + "%";
+        this.element.style.top = "" + (this.row * 12.5) + "%";
+    }
+
+    startDrag(cells:Cell[][]){
+        
+    }
+}
+
+class Huu extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Huu.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+    startDrag(cells:Cell[][]){
+        if(this.row+1 < 8){
+            if(this.column-1 > 0){
+                $(cells[this.row+1][this.column-1].element).droppable({
+                    drop:function(event,ui){
+                        $(this).draggable("disable");
+                    }
+                });
+            }
+        }
+    }
+}
+
+class Hasag extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Hasag.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+}
+
+class Mori extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Mori.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+}
+
+class Teme extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Teme.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+}
+
+class Bars extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Bars.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+}
+
+class Han extends Xitar {
+    constructor(img: String) {
+        super();
+            $(this.element).attr("src","img/"+img+"Han.gif");
+            $(this.element).addClass("xitar");
+        
+    }
+}
+
+
+class Board {
+    xitars: Xitar[][];
+    clickedXitar:Xitar;
+    lastMovedXitar:Xitar;
+    cells: Cell[][];
+    bee:boolean = true;   // true:qagan     false:har
+    playerTurn = false;
+    onEvent: Function;           // Callback function when an action on the board occurs
+
+    private positioningEnabled: boolean;    // Set to true when the player can position the xitar
+
+    constructor(public element: HTMLElement) {
+        this.cells = [];
+        this.xitars = [];
+        var referenceCell = $(this.createCells().element);
+
+        this.xitars[0] = [];
+        this.xitars[1] = [];
+
+        this.createHuu();
+        this.createHasag();
+        this.createMori();
+        this.createTeme();
+        this.createBars();
+        this.createHan();
+        
+        for(var i = 0; i<8; i++){
+            $(this.xitars[0][i].element).data("xitar",0).data("xitarIndex", i).draggable({
+                    containment: 'parent',
+                    grid: [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2],
+                    cursor: 'crosshair',
+                    revert:"invalid"
+                })
+            //this.xitars[0][i].startDrag(this.cells);
+        }
+        
+
+        $(window).resize((evt) => {
+            $(this.element).children(".xitar").draggable("option", "grid", [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2]);
+        });
+
+    }
+
+    createHan(){
+        var xitar: Xitar = null;
+        var qaganHan:Han = new Han("qagan");
+        var harHan:Han = new Han("har");
+            
+        this.element.appendChild(qaganHan.element);
+        this.element.appendChild(harHan.element);
+        if(this.bee){
+            this.xitars[0][4] = qaganHan;
+            this.xitars[1][4] = harHan;
+        }else {
+            this.xitars[1][4] = qaganHan;
+            this.xitars[0][4] = harHan;
+        }
+        this.xitars[0][4].updatePosition(7, 4);
+        this.xitars[1][4].updatePosition(0, 4);
+            
+    }
+    
+    
+    createBars(){
+        var xitar: Xitar = null;
+        var qaganBars:Bars = new Bars("qagan");
+        var harBars:Bars = new Bars("har");
+            
+        this.element.appendChild(qaganBars.element);
+        this.element.appendChild(harBars.element);
+        if(this.bee){
+            this.xitars[0][3] = qaganBars;
+            this.xitars[1][3] = harBars;
+        }else {
+            this.xitars[1][3] = qaganBars;
+            this.xitars[0][3] = harBars;
+        }
+        this.xitars[0][3].updatePosition(7, 3);
+        this.xitars[1][3].updatePosition(0, 3);
+            
+    }
+    
+    
+    createTeme(){
+        var xitar: Xitar = null;
+        for(var i = 2; i<8; i+=3){
+            var qaganTeme:Teme = new Teme("qagan");
+            var harTeme:Teme = new Teme("har");
+            
+            this.element.appendChild(qaganTeme.element);
+            this.element.appendChild(harTeme.element);
+            if(this.bee){
+                this.xitars[0][i] = qaganTeme;
+                this.xitars[1][i] = harTeme;
+            }else {
+                this.xitars[1][i] = qaganTeme;
+                this.xitars[0][i] = harTeme;
+            }
+            this.xitars[0][i].updatePosition(7, i);
+            this.xitars[1][i].updatePosition(0, i);
+            
+        }
+    }
+    
+    
+    createMori(){
+        var xitar: Xitar = null;
+        for(var i = 1; i<8; i+=5){
+            var qaganMori:Mori = new Mori("qagan");
+            var harMori:Mori = new Mori("har");
+            
+            this.element.appendChild(qaganMori.element);
+            this.element.appendChild(harMori.element);
+            if(this.bee){
+                this.xitars[0][i] = qaganMori;
+                this.xitars[1][i] = harMori;
+            }else {
+                this.xitars[1][i] = qaganMori;
+                this.xitars[0][i] = harMori;
+            }
+            this.xitars[0][i].updatePosition(7, i);
+            this.xitars[1][i].updatePosition(0, i);
+            
+        }
+    }
+    
+    
+    createHasag(){
+        var xitar: Xitar = null;
+        for(var i = 0; i<8; i+=7){
+            var qaganHasag:Hasag = new Hasag("qagan");
+            var harHasag:Hasag = new Hasag("har");
+            
+            this.element.appendChild(qaganHasag.element);
+            this.element.appendChild(harHasag.element);
+            if(this.bee){
+                this.xitars[0][i] = qaganHasag;
+                this.xitars[1][i] = harHasag;
+            }else {
+                this.xitars[1][i] = qaganHasag;
+                this.xitars[0][i] = harHasag;
+            }
+            this.xitars[0][i].updatePosition(7, i);
+            this.xitars[1][i].updatePosition(0, i);
+            
+        }
+    }
+    
+    createHuu(){
+        var xitar: Xitar = null;
+        for(var i = 0; i< 8; i++){
+            var qaganHuu:Huu = new Huu("qagan");
+            var harHuu:Huu = new Huu("har");
+            
+            this.element.appendChild(qaganHuu.element);
+            this.element.appendChild(harHuu.element);
+            if(this.bee){
+                this.xitars[0][i] = qaganHuu;
+                this.xitars[1][i] = harHuu;
+            }else {
+                this.xitars[1][i] = qaganHuu;
+                this.xitars[0][i] = harHuu;
+            }
+            this.xitars[0][i].updatePosition(6, i);
+            this.xitars[1][i].updatePosition(1, i);
+            
+        }
+    }
+        
+    createCells():Cell{
+        var cell: Cell = null;
+        for (var row = 0; row < 8; row++) {
+            this.cells[row] = [];
+            for (var column = 0; column < 8; column++) {
+                cell = new Cell(row, column);
+                this.cells[row][column] = cell;
+                this.element.appendChild(cell.element);
+                if((row + column) % 2 === 0){
+                    $(cell.element).addClass("cell nar");
+                }else{
+                    $(cell.element).addClass("cell sar");
+                }
+            }
+        }
+        return cell;
+    }
+    
+
+}
+
+class Game {
+    static gameState = { begin: 0, adversaryTurn: 1, playerTurn: 2, finished: 3 };
+    static msgs = {
+        gameStart: "Drag your ships to the desired location on your board (on the right), then bomb a square on the left board to start the game!",
+        invalidPositions: "All ships must be in valid positions before the game can begin.",
+        wait: "Wait your turn!",
+        gameOn: "Game on!",
+        hit: "Good hit!",
+        shipSunk: "You sunk a ship!",
+        lostShip: "You lost a ship :-(",
+        lostGame: "You lost this time. Click anywhere on the left board to play again.",
+        allSunk: "Congratulations!  You won!  Click anywhere on the left board to play again."
+    };
+
+    state = Game.gameState.begin;
+    playerBoard: Board;
+
+    constructor() {
+        this.updateStatus(Game.msgs.gameStart);
+        this.playerBoard = new Board($("#playerBoard")[0]);
+        this.playerBoard.onEvent = (evt: string) => {
+            switch (evt) {
+                case 'playerMissed':
+                case 'hit':
+                    this.playerBoard.playerTurn = false;
+                    break;
+                case 'shipSunk':
+                    this.updateStatus(Game.msgs.lostShip);
+                    this.playerBoard.playerTurn = false;
+                    break;
+                case 'allSunk':
+                    this.updateStatus(Game.msgs.lostGame);
+                    this.playerBoard.playerTurn = true;
+                    this.state = Game.gameState.finished;
+                    break;
+            }
+        };
+    }
+
+    private adversaryTurn() {
+        this.playerBoard.playerTurn = false;
+        this.state = Game.gameState.adversaryTurn;
+        setTimeout(() => {
+            //this.playerBoard.chooseMove();
+        }, 250);
+    }
+
+    private startGame() {
+        this.state = Game.gameState.playerTurn;
+        this.playerBoard.playerTurn = true;
+        this.updateStatus(Game.msgs.gameOn);
+    }
+
+    private updateStatus(msg: string) {
+        $("#status").slideUp('fast', function () {  // Slide out the old text
+            $(this).text(msg).slideDown('fast');  // Then slide in the new text
+        });
+    }
+}
+
+$(new Function("var game = new Game();"));

@@ -1,0 +1,67 @@
+﻿html 
+{
+    width: 100%;
+    height: 100%;
+    -ms-content-zooming: none;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+}
+body {
+    font-family: Verdana;
+    width: 100%;
+    height: 100%;
+    /*background-color: #b5caae;*/
+    background: url('img/bg2.jpg');
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    min-height: 480px;
+    min-width: 640px;
+}
+#header {
+    width: 100%;
+    height: 25%;
+}
+#boards {
+    width: 500px;
+    height: 500px;
+}
+.board {
+    background-color: #111111;
+    border: 2px groove black;
+    height: 80%;
+    padding: 0%;
+    position: relative;
+}
+.cell {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    float: left;
+    height: 12.5%;
+    width: 12.5%;
+    border: 1px dotted #A0A0FF;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+}
+.nar {
+    background:  url('img/nar.jpg') repeat;
+}
+.sar {
+    background:  url('img/sar.jpg') repeat;
+}
+
+.xitar {
+    position: absolute;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    margin: 0%;
+    padding: 0%;
+    width: 12.5%;
+    height: 12.5%;
+    z-index: 1;
+    -ms-touch-action: none;
+}
+
+}
