@@ -28,6 +28,7 @@ class Xitar {
     amid = true;
     //state:States;
     element: HTMLElement;
+    //cells:Cell[][];
 
     constructor() {
         this.element = $("<img />")[0];
@@ -43,7 +44,11 @@ class Xitar {
         this.element.style.left = "" + (this.column * 12.5) + "%";
         this.element.style.top = "" + (this.row * 12.5) + "%";
     }
-
+    /*
+    setCells(c:Cell[][]){
+        this.cells = c;
+    }
+    */
     startDrag(cells:Cell[][]){
         
     }
@@ -57,7 +62,16 @@ class Huu extends Xitar {
         
     }
     startDrag(cells:Cell[][]){
-        if(this.row+1 < 8){
+        //var cells:Cell[][] = event.data.cells;
+        if(this.row > 0){
+            alert("hhhhhhhhhhhhhh"+this.row+"  "+this.column);
+            $(cells[this.row-1][this.column].element).droppable({
+                drop:function(event,ui){
+                    alert("dddddddddddddddddd");
+                    ui.draggable.draggable("disable");
+                }
+            });
+            /*
             if(this.column-1 > 0){
                 $(cells[this.row+1][this.column-1].element).droppable({
                     drop:function(event,ui){
@@ -65,6 +79,7 @@ class Huu extends Xitar {
                     }
                 });
             }
+            */
         }
     }
 }
@@ -116,6 +131,7 @@ class Han extends Xitar {
 
 
 class Board {
+    ff:Function;
     xitars: Xitar[][];
     clickedXitar:Xitar;
     lastMovedXitar:Xitar;
@@ -133,22 +149,27 @@ class Board {
 
         this.xitars[0] = [];
         this.xitars[1] = [];
-
         this.createHuu();
         this.createHasag();
         this.createMori();
         this.createTeme();
         this.createBars();
         this.createHan();
-        
-        for(var i = 0; i<8; i++){
+        for(var i = 0; i<16; i++){
             $(this.xitars[0][i].element).data("xitar",0).data("xitarIndex", i).draggable({
                     containment: 'parent',
                     grid: [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2],
                     cursor: 'crosshair',
                     revert:"invalid"
-                })
-            //this.xitars[0][i].startDrag(this.cells);
+                });
+        }
+        
+        for(var i = 8; i<16; i++){
+            this.ff = function(e){ this.xitars[0][$(e.target).data("xitarIndex")].startDrag(this.cells);};
+            $(this.xitars[0][i].element).draggable({
+                                                    start:$.proxy(this,"ff")
+                });
+            
         }
         
 
@@ -265,7 +286,7 @@ class Board {
     
     createHuu(){
         var xitar: Xitar = null;
-        for(var i = 0; i< 8; i++){
+        for(var i = 8; i< 16; i++){
             var qaganHuu:Huu = new Huu("qagan");
             var harHuu:Huu = new Huu("har");
             
@@ -278,8 +299,8 @@ class Board {
                 this.xitars[1][i] = qaganHuu;
                 this.xitars[0][i] = harHuu;
             }
-            this.xitars[0][i].updatePosition(6, i);
-            this.xitars[1][i].updatePosition(1, i);
+            this.xitars[0][i].updatePosition(6, i-8);
+            this.xitars[1][i].updatePosition(1, i-8);
             
         }
     }

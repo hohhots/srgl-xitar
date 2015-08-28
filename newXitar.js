@@ -23,6 +23,7 @@ var Cell = (function () {
 })();
 //states = {"normal","clicked","lastMoved",};
 var Xitar = (function () {
+    //cells:Cell[][];
     function Xitar() {
         this.column = -1;
         this.row = 0;
@@ -38,6 +39,11 @@ var Xitar = (function () {
         this.element.style.left = "" + (this.column * 12.5) + "%";
         this.element.style.top = "" + (this.row * 12.5) + "%";
     };
+    /*
+    setCells(c:Cell[][]){
+        this.cells = c;
+    }
+    */
     Xitar.prototype.startDrag = function (cells) {
     };
     return Xitar;
@@ -50,14 +56,15 @@ var Huu = (function (_super) {
         $(this.element).addClass("xitar");
     }
     Huu.prototype.startDrag = function (cells) {
-        if (this.row + 1 < 8) {
-            if (this.column - 1 > 0) {
-                $(cells[this.row + 1][this.column - 1].element).droppable({
-                    drop: function (event, ui) {
-                        $(this).draggable("disable");
-                    }
-                });
-            }
+        //var cells:Cell[][] = event.data.cells;
+        if (this.row > 0) {
+            alert("hhhhhhhhhhhhhh" + this.row + "  " + this.column);
+            $(cells[this.row - 1][this.column].element).droppable({
+                drop: function (event, ui) {
+                    alert("dddddddddddddddddd");
+                    ui.draggable.draggable("disable");
+                }
+            });
         }
     };
     return Huu;
@@ -124,12 +131,18 @@ var Board = (function () {
         this.createTeme();
         this.createBars();
         this.createHan();
-        for (var i = 0; i < 8; i++) {
+        for (var i = 0; i < 16; i++) {
             $(this.xitars[0][i].element).data("xitar", 0).data("xitarIndex", i).draggable({
                 containment: 'parent',
                 grid: [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2],
                 cursor: 'crosshair',
                 revert: "invalid"
+            });
+        }
+        for (var i = 8; i < 16; i++) {
+            this.ff = function (e) { this.xitars[0][$(e.target).data("xitarIndex")].startDrag(this.cells); };
+            $(this.xitars[0][i].element).draggable({
+                start: $.proxy(this, "ff")
             });
         }
         $(window).resize(function (evt) {
@@ -229,7 +242,7 @@ var Board = (function () {
     };
     Board.prototype.createHuu = function () {
         var xitar = null;
-        for (var i = 0; i < 8; i++) {
+        for (var i = 8; i < 16; i++) {
             var qaganHuu = new Huu("qagan");
             var harHuu = new Huu("har");
             this.element.appendChild(qaganHuu.element);
@@ -242,8 +255,8 @@ var Board = (function () {
                 this.xitars[1][i] = qaganHuu;
                 this.xitars[0][i] = harHuu;
             }
-            this.xitars[0][i].updatePosition(6, i);
-            this.xitars[1][i].updatePosition(1, i);
+            this.xitars[0][i].updatePosition(6, i - 8);
+            this.xitars[1][i].updatePosition(1, i - 8);
         }
     };
     Board.prototype.createCells = function () {
