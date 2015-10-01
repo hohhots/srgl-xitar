@@ -12,16 +12,20 @@ body {
     width: 100%;
     height: 100%;
     /*background-color: #b5caae;*/
-    background: url('img/bg2.jpg');
     margin: 0px;
     border: 0px;
     padding: 0px;
     min-height: 480px;
     min-width: 640px;
 }
-#header {
-    width: 100%;
-    height: 25%;
+#header{
+	background-color:#f66;
+}
+#deerHairqig, #doorHairqig{
+	background-color:#666;
+	height:80px;
+	width:500px;
+	padding:8px;
 }
 #boards {
     width: 500px;
@@ -30,7 +34,7 @@ body {
 .board {
     background-color: #111111;
     border: 2px groove black;
-    height: 80%;
+    height: 100%;
     padding: 0%;
     position: relative;
 }
@@ -62,6 +66,4 @@ body {
     height: 12.5%;
     z-index: 1;
     -ms-touch-action: none;
-}
-
 }

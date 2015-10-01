@@ -4,7 +4,6 @@
 class Cell {
     xitar:number;
     xitarIndex: number;
-    hasHit: boolean;
     element: HTMLElement;
 
     constructor(public row: number, public column: number) {
@@ -17,24 +16,22 @@ class Cell {
     }
 
     cellLocation() {
-        return "" + this.row + "," + this.column;
+        return "" + this.row+ "," + this.column;
     }
 }
 
-//states = {"normal","clicked","lastMoved",};
 
 class Xitar {
     column:number = -1;
-    row:number = 0;
-    amid:boolean = true;
-    //state:States;
+    row:number = -1;
     element: HTMLElement;
-    drop:Function;
-    cells:Cell[];
+    cells:Cell[] = [];
+    targetNum:number = -1;
+    ithNum:number = -1;
     moved:boolean = true;
-    droped:Function;
 
-    constructor(public iosocket, board:Board) {
+    constructor(public iosocket,public board:Board) {
+        var board = this.board;
         this.element = $("<img />")[0];
         this.cells = [];
         $(this).bind('idjaiEvent',$.proxy(board.idhLitsener,board));
@@ -46,13 +43,29 @@ class Xitar {
         this.updateLayout();
     }
     
-    idjai(xitarIndex:number){
-        $(this).trigger("idjaiEvent",xitarIndex);
+    updateLayout() {
+        this.element.style.left = "" + (this.column * 12.5) + "%";
+        this.element.style.top = "" + (this.row * 12.5) + "%";
     }
     
+    idjai(xitarI:number){
+        $(this).trigger("idjaiEvent",xitarI);
+    }
+
+    outFromBoard(xitar:number, xitarIndex:number){
+        this.row = -1;
+        this.column = -1;
+        this.board.element.removeChild(this.element);
+        $(this.element).removeClass('xitar');
+        if($(this.element).data('xitar') == 0){
+            $('#deerHairqig').append(this.element);
+        }else if($(this.element).data('xitar') == 1){
+            $('#doorHairqig').append(this.element);
+        }
+    }
+
     hasMoved(v:string){
         this.moved = true;
-        //alert("hasMoved=========" + v);
         $(this).trigger("moved",v);
         
     }
@@ -60,55 +73,152 @@ class Xitar {
         this.moved = false;
     }
     
-    stopDrag(){
-        for(var i = 0; i<this.cells.length; i++){
-            //$(this.cells[i].element).droppable("disable");
-        }
-        $(this.cells).empty();
-        if(!this.moved){
-            this.updatePosition(this.row, this.column);
-        }
-    }
-    
-    cellDrop(x:number, y:number){
-        //$(this.element).draggable("disable");
-        this.hasMoved($(this.element).data("xitarIndex") + ',' + x + ',' + y);
-        this.updatePosition(x, y);
-    }    
-    
-    updateLayout() {
-        this.element.style.left = "" + (this.column * 12.5) + "%";
-        this.element.style.top = "" + (this.row * 12.5) + "%";
-    }
-    /*
-    setCells(c:Cell[][]){
-        this.cells = c;
-    }
-    */
-    
-    dropEnd(){
-        
+    moveXitar(cellRaw:number, cellCol:number):boolean{
+        this.updatePosition(cellRaw, cellCol);
+        return true;
     }
     
     startDrag(cells:Cell[][]){
         
     }
     
-    moveXitar(cellRaw:number, cellCol:number):boolean{
-        this.updatePosition(cellRaw, cellCol);
-        return true;
+    stopDrag(){
+        for(var i = 0; i<this.cells.length; i++){
+            $(this.cells[i].element).droppable("destroy");
+        }
+        this.cells.length = 0;
     }
     
-    outFromBoard(xitar:number, xitarIndex:number){
-        //alert(xitarIndex);
-        this.element.style.position = 'absolute';
-        this.element.style.top = 100+xitar*350+'px';
-        if(xitarIndex > 7) {xitarIndex = 5}
-        else if(xitarIndex > 4) {xitarIndex = 7 - xitarIndex;}
-        this.element.style.left = xitarIndex*80+'px';
-        //alert(xitar+':'+xitarIndex+':'+(700-xitar*500)+','+xitarIndex*80);
-        this.amid = false;
+    cellDrop(x:number, y:number, oldCell:Cell){
+        oldCell.xitar = -1;oldCell.xitarIndex = -1;
+        console.log('>>' + $(oldCell.element).data('cellX') +'-'+ $(oldCell.element).data('cellY'));
+        //newCell.xitar = 0;newCell.xitarIndex = $(this.element).data("xitarIndex");
+        console.log('>>>>' + x +'-'+ y);
+        this.board.cells[x][y].xitar = 0;
+        this.board.cells[x][y].xitarIndex = $(this.element).data("xitarIndex");
+        console.log('>>>>>>>>' + x +'-'+ y);
+        this.updatePosition(x, y);
+        this.hasMoved($(this.element).data("xitarIndex") + ',' + x + ',' + y);
+    }
+    
+    xitarStartDrag(i:number, cells:Cell[][], u_d:number, r_l:number):{i:number, b:boolean}{
+        var self = this;
+            console.log(i + '::' + (this.row+u_d) +' : '+ (this.column+r_l) +' - '+ cells[this.row+u_d][this.column+r_l].xitar);
+                if(cells[this.row+u_d][this.column+r_l].xitar == -1){
+                    this.cells[i] = cells[this.row+u_d][this.column+r_l];
+                    i++;
+                    (function (u_d,r_l){
+                        $(cells[self.row+u_d][self.column+r_l].element).droppable({
+                            drop:function(event,ui){
+                                self.cellDrop(self.row+u_d,self.column+r_l,cells[self.row][self.column]);
+                            }
+                        });   
+                    })(u_d,r_l);
+                    return {i:i,b:false};
+                }
+                if(cells[this.row+u_d][this.column+r_l].xitar == 1){
+                    this.cells[i] = cells[this.row+u_d][this.column+r_l];
+                    i++;
+                    (function (u_d,r_l){
+                        $(cells[self.row+u_d][self.column+r_l].element).droppable({
+                            drop:function(event,ui){
+                                self.idjai(cells[self.row+u_d][self.column+r_l].xitarIndex);
+                                self.cellDrop(self.row+u_d,self.column+r_l,cells[self.row][self.column]);
+                            }
+                        });
+                    })(u_d,r_l);
+                    return {i:i, b:true};
+                }
+                if(cells[this.row+u_d][this.column+r_l].xitar == 0){
+                    console.log('break: ' + (this.row+u_d) +' : '+ (this.column+r_l));
+                    return {i:i, b:true};
+                }
+    }
+}
+class Bars extends Xitar {
+    constructor(public iosocket, img: String, board:Board) {
+        super(iosocket, board);
+            $(this.element).attr("src","img/"+img+"Bars.gif");
+            $(this.element).addClass("xitar");
         
+    }
+    
+    startDrag(cells:Cell[][]){
+        if(this.board.firstStep){
+            return;
+        }
+        var returnObj:{i:number, b:boolean}
+        var i:number = 0;
+        $(this.cells).empty();
+        this.notMoved();
+        var k:number = 1;
+        while(this.row-k >= 0 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row-k >= 0 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,-k,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,0);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,k,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,0);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,0,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,0,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('-----------------------');
+        for(var i = 0; i<this.cells.length; i++){
+            console.log($(this.cells[i].element).data('cellX') +' - '+ $(this.cells[i].element).data('cellY'));
+        }
+        console.log('=======================');
     }
 }
 
@@ -125,63 +235,64 @@ class Huu extends Xitar {
         var i:number = 0;
         $(this.cells).empty();
         this.notMoved();
+        
+        if(this.board.firstStep){
+            if(this.row == 6){
+                if((this.column == 4 && cells[3][4].xitar == 1)||(this.column == 4 && cells[3][4].xitar == -1 && cells[3][3].xitar == -1)){
+                   this.cells[i] = cells[this.row-2][this.column];
+                    i++;
+                    $(cells[this.row-2][this.column].element).droppable({
+                        drop:function(event,ui){
+                            self.cellDrop(self.row-2,self.column,cells[6][4]);
+                            self.board.firstStepMoved();
+                        }
+                    });
+                }
+                if((this.column == 3 && cells[3][3].xitar == 1)||(this.column == 3 && cells[3][4].xitar == -1 && cells[3][3].xitar == -1)){
+                    this.cells[i] = cells[this.row-2][this.column];
+                    i++;
+                    $(cells[this.row-2][this.column].element).droppable({
+                        drop:function(event,ui){
+                            self.cellDrop(self.row-2,self.column,cells[6][3]);
+                            self.board.firstStepMoved();
+                        }
+                    });
+                }
+            }
+            return;
+        }
+        
         if(this.row > 0){
             if(cells[this.row-1][this.column].xitar == -1){
-                var x = this.row-1;
-                var y = this.column;
                 this.cells[i] = cells[this.row-1][this.column];
                 i++;
-                /*
-                this.droped = function(e){
-                    this.cellDrop(x,y);
-                } ;
-                */
                 $(cells[this.row-1][this.column].element).droppable({
-                    //drop:$.proxy(this,"droped")
-                    drop:function(event,ui){self.cellDrop(x,y);}
+                    drop:function(event,ui){self.cellDrop(self.row-1,self.column,cells[self.row][self.column]);}
                 });
             }
-            if(this.column < 7 && cells[this.row-1][this.column+1].xitar == 1){
-                console.log('9999999999999999999');
-                var x = this.row-1;
-                var y = this.column+1;
-                this.cells[i] = cells[x][y];
-                i++;
-                /*
-                this.droped = function(e){
-                    this.cellDrop(x,y);
-                } ;
-                */
-                var targetCell = cells[x][y];
-                $(cells[x][y].element).droppable({
-                    //drop:$.proxy(this,"droped")
-                    drop:function(event,ui){
-                        self.cellDrop(x,y);
-                        //self.board.xitars[1][targetCell.xitarIndex].outFromBoard(1,targetCell.xitarIndex);
-                        self.idjai(targetCell.xitarIndex);
-                    }
-                });
-            }
-            
+
             if(this.column > 0 && cells[this.row-1][this.column-1].xitar == 1){
-                console.log('8888888888888888888');
-                var x = this.row-1;
-                var y = this.column-1;
-                this.cells[i] = cells[x][y];
+                this.cells[i] = cells[this.row-1][this.column-1];
                 i++;
-                var targetCell = cells[x][y];
-                $(cells[x][y].element).droppable({
+                $(cells[this.row-1][this.column-1].element).droppable({
                     drop:function(event,ui){
-                        self.cellDrop(x,y);
-                        self.idjai(targetCell.xitarIndex);
+                        self.idjai(cells[self.row-1][self.column-1].xitarIndex);
+                        self.cellDrop(self.row-1,self.column-1,cells[self.row][self.column]);
                     }
                 });
             }
             
-            //alert(this.column+':'+cells[this.row-1][this.column+1].xitar);
-            
-            
-            
+            if(this.column < 7 && cells[this.row-1][this.column+1].xitar == 1){
+                this.cells[i] = cells[this.row-1][this.column+1];
+                i++;
+                $(cells[this.row-1][this.column+1].element).droppable({
+                    drop:function(event,ui){
+                        self.idjai(cells[self.row-1][self.column+1].xitarIndex);
+                        self.cellDrop(self.row-1,self.column+1,cells[self.row][self.column]);
+                    }
+                });
+            }
+
         }
     }
 }
@@ -193,6 +304,52 @@ class Hasag extends Xitar {
             $(this.element).addClass("xitar");
         
     }
+    startDrag(cells:Cell[][]){
+        if(this.board.firstStep){
+            return;
+        }
+        var returnObj:{i:number, b:boolean}
+        var i:number = 0;
+        $(this.cells).empty();
+        this.notMoved();
+        var k:number = 1;
+        k = 1;
+        while(this.row-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,0);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,0);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,0,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,0,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('-----------------------');
+        for(var i = 0; i<this.cells.length; i++){
+            console.log($(this.cells[i].element).data('cellX') +' - '+ $(this.cells[i].element).data('cellY'));
+        }
+        console.log('=======================');
+    }
 }
 
 class Mori extends Xitar {
@@ -201,6 +358,60 @@ class Mori extends Xitar {
             $(this.element).attr("src","img/"+img+"Mori.gif");
             $(this.element).addClass("xitar");
         
+    }
+
+    startDrag(cells:Cell[][]){
+        if(this.board.firstStep){
+            return;
+        }
+        var returnObj:{i:number, b:boolean}
+        var i:number = 0;
+        $(this.cells).empty();
+        this.notMoved();
+        if(this.row-1 >= 0 && this.column-2 >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-1,-2);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row-2 >= 0 && this.column-1 >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-2,-1);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row-2 >= 0 && this.column+1 <= 7){
+            returnObj = this.xitarStartDrag(i,cells,-2,1);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row-1 >= 0 && this.column+2 <= 7){
+            returnObj = this.xitarStartDrag(i,cells,-1,2);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+1 <= 7 && this.column+2 <= 7){
+            returnObj = this.xitarStartDrag(i,cells,1,2);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+2 <= 7 && this.column+1 <= 7){
+            returnObj = this.xitarStartDrag(i,cells,2,1);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+2 <= 7 && this.column-1 >= 0){
+            returnObj = this.xitarStartDrag(i,cells,2,-1);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+1 <= 7 && this.column-2 >= 0){
+            returnObj = this.xitarStartDrag(i,cells,1,-2);
+            i = returnObj.i;
+        }
+        console.log('-----------------------');
+        for(var i = 0; i<this.cells.length; i++){
+            console.log($(this.cells[i].element).data('cellX') +' - '+ $(this.cells[i].element).data('cellY'));
+        }
+        console.log('=======================');
     }
 }
 
@@ -211,16 +422,55 @@ class Teme extends Xitar {
             $(this.element).addClass("xitar");
         
     }
+
+    startDrag(cells:Cell[][]){
+        if(this.board.firstStep){
+            return;
+        }
+        var returnObj:{i:number, b:boolean}
+        var i:number = 0;
+        $(this.cells).empty();
+        this.notMoved();
+        var k:number = 1;
+        while(this.row-k >= 0 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row-k >= 0 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,-k,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,k,-k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('<-------------****------------>');
+        k = 1;
+        while(this.row+k <= 7 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,k);
+            i = returnObj.i;
+            if(returnObj.b){break;}
+            k++;
+        }
+        console.log('-----------------------');
+        for(var i = 0; i<this.cells.length; i++){
+            console.log($(this.cells[i].element).data('cellX') +' - '+ $(this.cells[i].element).data('cellY'));
+        }
+        console.log('=======================');
+    }
+
 }
 
-class Bars extends Xitar {
-    constructor(public iosocket, img: String, board:Board) {
-        super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Bars.gif");
-            $(this.element).addClass("xitar");
-        
-    }
-}
 
 class Han extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
@@ -229,20 +479,71 @@ class Han extends Xitar {
             $(this.element).addClass("xitar");
         
     }
+
+    startDrag(cells:Cell[][]){
+        if(this.board.firstStep){
+            return;
+        }
+        var returnObj:{i:number, b:boolean}
+        var i:number = 0;
+        $(this.cells).empty();
+        this.notMoved();
+        var k:number = 1;
+        if(this.row-k >= 0 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,-k);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row-k >= 0 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,-k,k);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,-k,0);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+k <= 7 && this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,k,-k);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+k <= 7 && this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,k);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.row+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,k,0);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.column-k >= 0){
+            returnObj = this.xitarStartDrag(i,cells,0,-k);
+            i = returnObj.i;
+        }
+        console.log('<-------------****------------>');
+        if(this.column+k <= 7){
+            returnObj = this.xitarStartDrag(i,cells,0,k);
+            i = returnObj.i;
+        }
+        console.log('-----------------------');
+        for(var i = 0; i<this.cells.length; i++){
+            console.log($(this.cells[i].element).data('cellX') +' - '+ $(this.cells[i].element).data('cellY'));
+        }
+        console.log('=======================');
+    }
 }
 
 
 class Board {
     startDrag:Function;
     stopDrag:Function;
-    xitarMoved:boolean = false;
     xitars: Xitar[][];
-    clickedXitar:Xitar;
-    lastMovedXitar:Xitar;
     cells: Cell[][];
+    firstStep:boolean = true;
     bee:boolean = true;   // true:qagan     false:har
-    playerTurn = false;
-    onEvent: Function;           // Callback function when an action on the board occurs
 
     private positioningEnabled: boolean;    // Set to true when the player can position the xitar
 
@@ -261,12 +562,9 @@ class Board {
         this.createTeme();
         this.createBars();
         this.createHan();
-        
+                
         for(var i = 0; i<16; i++){
-             
-        }
-        
-        for(var i = 0; i<16; i++){
+            $(this.xitars[1][i].element).data("xitar",1).data("xitarIndex", i);
             $(this.xitars[0][i].element).data("xitar",0).data("xitarIndex", i).draggable({
                     containment: 'parent',
                     grid: [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2],
@@ -275,31 +573,33 @@ class Board {
                 });
         }
         
-        for(var i = 8; i<16; i++){
-            this.startDrag = function(e){ this.xitars[0][$(e.target).data("xitarIndex")].startDrag(this.cells);};
+        for(var i = 0; i<16; i++){
+            this.startDrag = function(e){ 
+                this.xitars[0][$(e.target).data("xitarIndex")].startDrag(this.cells);
+            };
             this.stopDrag = function(e){ 
                 this.xitars[0][$(e.target).data("xitarIndex")].stopDrag();
                 if(this.xitars[0][$(e.target).data("xitarIndex")].moved){
                     //this.allXitarDragDisable();
                 }
             };
+
             $(this.xitars[0][i].element).draggable({
                 start:$.proxy(this,"startDrag"),
                 stop:$.proxy(this,"stopDrag")
             });
-            
         }
-        
 
         $(window).resize((evt) => {
             $(this.element).children(".xitar").draggable("option", "grid", [referenceCell.width() * 0.99 + 2, referenceCell.height() * 0.99 + 2]);
         });
-
+    }
+    
+    firstStepMoved(){
+        this.firstStep = false;
     }
     
     idhLitsener(e,xitarIndex:number){
-        //alert(' idjai:'+xitarIndex);
-        //alert(typeof(this));
         this.xitars[1][xitarIndex].outFromBoard(1,xitarIndex);
     }
 
@@ -447,6 +747,7 @@ class Board {
             
             this.element.appendChild(qaganHuu.element);
             this.element.appendChild(harHuu.element);
+            
             if(this.bee){
                 this.xitars[0][i] = qaganHuu;
                 this.xitars[1][i] = harHuu;
@@ -476,7 +777,7 @@ class Board {
                 this.cells[row][column].xitarIndex = -1;
                 this.element.appendChild(cell.element);
                 $(cell.element).data("cellX",row).data("cellY",column);
-                if((row + column) % 2 === 0){
+                if((row+ column) % 2 === 0){
                     $(cell.element).addClass("cell nar");
                 }else{
                     $(cell.element).addClass("cell sar");
@@ -489,9 +790,7 @@ class Board {
     removeOwnXitar( cellRaw:number, cellCol:number){
         var xitarIndex = this.cells[cellRaw][cellCol].xitarIndex;
         if(xitarIndex != -1){
-            //alert('------'+xitarIndex);
             this.xitars[0][xitarIndex].outFromBoard(0,xitarIndex);
-            //alert(xitarIndex);
         }
     }
     
@@ -499,25 +798,9 @@ class Board {
 }
 
 class Game {
-    static gameState = { begin: 0, adversaryTurn: 1, playerTurn: 2, finished: 3 };
-    static msgs = {
-        gameStart: "Drag your xitars to the desired location on your board (on the right), then bomb a square on the left board to start the game!",
-        invalidPositions: "All xitars must be in valid positions before the game can begin.",
-        wait: "Wait your turn!",
-        gameOn: "Game on!",
-        hit: "Good hit!",
-        xitarSunk: "You sunk a xitar!",
-        lostxitar: "You lost a xitar :-(",
-        lostGame: "You lost this time. Click anywhere on the left board to play again.",
-        allSunk: "Congratulations!  You won!  Click anywhere on the left board to play again."
-    };
-
-    
-    state = Game.gameState.begin;
     playerBoard: Board;
 
     constructor(public iosocket, player) {
-        this.updateStatus(Game.msgs.gameStart);
         this.playerBoard = new Board($("#playerBoard")[0], this.iosocket, player);
         for(var i = 0; i<16; i++){
             $(this.playerBoard.xitars[0][i]).bind("moved", this.xitarListener);
@@ -525,46 +808,17 @@ class Game {
         }
         var pb = this.playerBoard;
         this.iosocket.on('message',function(message){
-            //alert(message);
             var num:number[] = message.toString().split(',');
-            //alert(num[0]);
+            pb.removeOwnXitar(7 - num[1], num[2]);
+            pb.cells[pb.xitars[1][num[0]].row][pb.xitars[1][num[0]].column].xitar = -1;
+            pb.cells[pb.xitars[1][num[0]].row][pb.xitars[1][num[0]].column].xitarIndex = -1;
+            pb.cells[7 - num[1]][num[2]].xitar = 1;
+            pb.cells[7 - num[1]][num[2]].xitarIndex = num[0];
             pb.xitars[1][num[0]].moveXitar(7-num[1], num[2]);
-            pb.removeOwnXitar(num[1], num[2]);
         });
-        
-
-        this.playerBoard.onEvent = (evt: string) => {
-            switch (evt) {
-                case 'playerMissed':
-                case 'hit':
-                    this.playerBoard.playerTurn = false;
-                    break;
-                case 'xitarSunk':
-                    this.updateStatus(Game.msgs.lostxitar);
-                    this.playerBoard.playerTurn = false;
-                    break;
-                case 'allSunk':
-                    this.updateStatus(Game.msgs.lostGame);
-                    this.playerBoard.playerTurn = true;
-                    this.state = Game.gameState.finished;
-                    break;
-            }
-        };
     }
 
-    private adversaryTurn() {
-        this.playerBoard.playerTurn = false;
-        this.state = Game.gameState.adversaryTurn;
-        setTimeout(() => {
-            //this.playerBoard.chooseMove();
-        }, 250);
-    }
 
-    private startGame() {
-        this.state = Game.gameState.playerTurn;
-        this.playerBoard.playerTurn = true;
-        this.updateStatus(Game.msgs.gameOn);
-    }
 
     private updateStatus(msg: string) {
         $("#status").slideUp('fast', function () {  // Slide out the old text
@@ -573,7 +827,6 @@ class Game {
     }
     
     xitarListener(e,v:string){
-        //alert(v + "------------------");
         this.iosocket.send(v);
     }
 }
