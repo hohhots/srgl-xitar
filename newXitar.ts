@@ -88,15 +88,51 @@ class Xitar {
         }
         this.cells.length = 0;
     }
-    
+    cellYImg(n:number):string{
+        var str:string = '<img src="img/aa.gif" />';
+        switch(n){
+            case 1:str = '<img src="img/na.gif" />';
+                break;
+            case 2:str = '<img src="img/ba.gif" />';
+                break;
+            case 3:str = '<img src="img/pa.gif" />';
+                break;
+            case 4:str = '<img src="img/ha.gif" />';
+                break;
+            case 5:str = '<img src="img/ga.gif" />';
+                break;
+            case 6:str = '<img src="img/ma.gif" />';
+                break;
+            case 7:str = '<img src="img/la.gif" />';
+                break;
+        }
+        return str;
+    }
     cellDrop(x:number, y:number, oldCell:Cell){
+        
+        var yablt = document.createElement('div');
+        var yabltNum = document.createElement('div');
+        $('#yablt').append(yablt);
+        $(yablt).addClass('yablt');
+        $('#yablt').append(yabltNum);
+        $(yabltNum).addClass('yabltNum');
+        var img1:string = this.cellYImg($(oldCell.element).data('cellY'));
+        var img2:string = this.cellYImg(y);
+        $(yablt).html(img1 + ($(oldCell.element).data('cellX')+1) +'<br />|<br />' +img2+ (x+1));
+        $(yablt).trigger('create');
+        $(yabltNum).html(''+ this.board.yabltNum);
+        $(yabltNum).trigger('create');
+        yablt.style.left = (this.board.yabltNum*35) + 'px';
+        yabltNum.style.left = (this.board.yabltNum*35-3) + 'px';
+        this.board.yabltNum++;
+        
         oldCell.xitar = -1;oldCell.xitarIndex = -1;
-        console.log('>>' + $(oldCell.element).data('cellX') +'-'+ $(oldCell.element).data('cellY'));
+        //console.log('>>' + $(oldCell.element).data('cellX') +'-'+ $(oldCell.element).data('cellY'));
         //newCell.xitar = 0;newCell.xitarIndex = $(this.element).data("xitarIndex");
-        console.log('>>>>' + x +'-'+ y);
+        //console.log('>>>>' + x +'-'+ y);
         this.board.cells[x][y].xitar = 0;
         this.board.cells[x][y].xitarIndex = $(this.element).data("xitarIndex");
-        console.log('>>>>>>>>' + x +'-'+ y);
+        //console.log('>>>>>>>>' + x +'-'+ y);
         this.updatePosition(x, y);
         this.hasMoved($(this.element).data("xitarIndex") + ',' + x + ',' + y);
     }
@@ -544,6 +580,7 @@ class Board {
     cells: Cell[][];
     firstStep:boolean = true;
     bee:boolean = true;   // true:qagan     false:har
+    yabltNum:number = 0;
 
     private positioningEnabled: boolean;    // Set to true when the player can position the xitar
 
