@@ -94,3 +94,42 @@ body {
     z-index: 1;
     -ms-touch-action: none;
 }
+#inputDiv{
+		border:1px #000 solid;
+		width:31px;
+	height:400px;
+	position:absolute;
+	top:40px;
+	left:760px;
+}
+#inputDiv img, 
+.message_M img{
+	display:block;
+	margin:0;
+	padding:0;
+}
+#send_botton{
+		border:1px #000 solid;
+		width:31px;
+		height:80px;
+	position:absolute;
+	top:450px;
+	left:760px;
+	background-color:#000;
+	cursor:pointer;
+}
+#message_M{
+		border:1px #000 solid;
+		width:200px;
+		height:490px;
+	position:absolute;
+	top:40px;
+	left:800px;
+	overflow-y:auto;
+}
+.message_M{
+	width:31px;
+	height:400px;
+	position:absolute;
+	top:10px;
+}

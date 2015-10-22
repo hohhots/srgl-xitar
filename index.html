@@ -22,7 +22,8 @@
         game = new Game(iosocket,message);
     });
 	function start(){
-		iosocket.emit('start','start')
+		iosocket.emit('start','start');
+		iosocket.emit('sendM','sendM');
 	}
 	</script>    
     <script src="newXitar.js"></script>
@@ -39,5 +40,6 @@
         <div id="playerBoard" class="quadrant board"></div>
     </div>
     <div id="doorHairqig"></div>
+	<div id="inputDiv"></div><div id="send_botton"></div><div id="message_M"></div>
 </body>
 </html>

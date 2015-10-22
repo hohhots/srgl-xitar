@@ -2,9 +2,6 @@ var fs = require('fs'),
 	http = require('http') , 
 	socketio = require('socket.io'),
 	stat = require('node-static'),
-	cookie = require('cookie'),
-	//session = require('cookie-session'),
-	util = require('util'),
 	port=8000;
 
 var flag = false;
@@ -26,13 +23,10 @@ var server = http.createServer(function(req, res){
 });
 
 var sio = socketio.listen(server);
-var sessionData;
 
 //console(socket.request.headers.cookie);
 sio.on('connection',function(socket){
 	console.log('connection');
-	sessionData = cookie.parse(socket.request.headers.cookie);
-	console.log(sessionData);
 	socket.on('start', function(msg){
 		console.log('Start Received :',msg);
 		if(!flag){
@@ -42,9 +36,13 @@ sio.on('connection',function(socket){
 			socket.emit('start', 'har');
 		}
 	});
+	socket.on('sendM',function(msg){
+		console.log('Message Received :',msg);
+		//sio.sockets.emit('message',msg);
+		socket.broadcast.emit('sendM', msg);
+	});
 	socket.on('message',function(msg){
 		console.log('Message Received :',msg);
-		console.log(sessionData);
 		//sio.sockets.emit('message',msg);
 		socket.broadcast.emit('message', msg);
 	});

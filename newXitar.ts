@@ -110,6 +110,8 @@ class Xitar {
     }
     cellDrop(x:number, y:number, oldCell:Cell){
         
+        var x1:number = x;
+        x1++;
         var yablt = document.createElement('div');
         var yabltNum = document.createElement('div');
         $('#yablt').append(yablt);
@@ -118,7 +120,7 @@ class Xitar {
         $(yabltNum).addClass('yabltNum');
         var img1:string = this.cellYImg($(oldCell.element).data('cellY'));
         var img2:string = this.cellYImg(y);
-        $(yablt).html(img1 + ($(oldCell.element).data('cellX')+1) +'<br />|<br />' +img2+ (x+1));
+        $(yablt).html(img1 + ($(oldCell.element).data('cellX')+1) +'<br />|<br />' +img2+ x1);
         $(yablt).trigger('create');
         $(yabltNum).html(''+ this.board.yabltNum);
         $(yabltNum).trigger('create');
@@ -580,7 +582,7 @@ class Board {
     cells: Cell[][];
     firstStep:boolean = true;
     bee:boolean = true;   // true:qagan     false:har
-    yabltNum:number = 0;
+    yabltNum:number = 1;
 
     private positioningEnabled: boolean;    // Set to true when the player can position the xitar
 
@@ -824,6 +826,30 @@ class Board {
         return cell;
     }
     
+    updateYbalt(xitarIndex:number, cellX:number, cellY:number){
+        var cellX1:number = cellX;
+        cellX1++;
+        
+        var oldCell = this.cells[this.xitars[1][xitarIndex].row][this.xitars[1][xitarIndex].column];
+        var yablt = document.createElement('div');
+        var yabltNum = document.createElement('div');
+        $('#yablt').append(yablt);
+        $(yablt).addClass('yablt');
+        $('#yablt').append(yabltNum);
+        $(yabltNum).addClass('yabltNum');
+        var img1:string = this.xitars[1][xitarIndex].cellYImg($(oldCell.element).data('cellY'));
+        var img2:string = this.xitars[1][xitarIndex].cellYImg(cellY);
+        alert(img2 +':'+ cellY)
+        $(yablt).html(img1 + ($(oldCell.element).data('cellX')+1) +'<br />|<br />' +img2+ cellX1);
+        $(yablt).trigger('create');
+        $(yabltNum).html(''+ this.yabltNum);
+        $(yabltNum).trigger('create');
+        yablt.style.left = (this.yabltNum*35) + 'px';
+        yabltNum.style.left = (this.yabltNum*35-3) + 'px';
+        this.yabltNum++;
+        
+    }
+
     removeOwnXitar( cellRaw:number, cellCol:number){
         var xitarIndex = this.cells[cellRaw][cellCol].xitarIndex;
         if(xitarIndex != -1){
@@ -833,19 +859,71 @@ class Board {
     
 
 }
+class inputMogolWusug{
+    constructor(){
+        $(document).keypress(function(event){
+            console.log(event.which);
+            switch(event.which){
+                case 97:$('#inputDiv').append('<img src="img/a.png" />');
+                    break;
+                case 98:$('#inputDiv').append('<img src="img/b.png" />');
+                    break;
+                case 100:$('#inputDiv').append('<img src="img/d.png" />');
+                    break;
+                case 101:$('#inputDiv').append('<img src="img/e.png" />');
+                    break;
+                case 103:$('#inputDiv').append('<img src="img/g.png" />');
+                    break;
+                case 104:$('#inputDiv').append('<img src="img/h.png" />');
+                    break;
+                case 105:$('#inputDiv').append('<img src="img/i.png" />');
+                    break;
+                case 106:$('#inputDiv').append('<img src="img/j.png" />');
+                    break;
+                case 107:$('#inputDiv').append('<img src="img/k.png" />');
+                    break;
+                case 108:$('#inputDiv').append('<img src="img/l.png" />');
+                    break;
+                case 109:$('#inputDiv').append('<img src="img/m.png" />');
+                    break;
+                case 110:$('#inputDiv').append('<img src="img/n.png" />');
+                    break;
+                case 111:$('#inputDiv').append('<img src="img/o.png" />');
+                    break;
+                case 112:$('#inputDiv').append('<img src="img/p.png" />');
+                    break;
+                case 114:$('#inputDiv').append('<img src="img/R.png" />');
+                    break;
+                case 115:$('#inputDiv').append('<img src="img/s.png" />');
+                    break;
+                case 65:$('#inputDiv').append('<img src="img/A.png" />');
+                    break;
+                case 120:$('#inputDiv').append('<img src="img/x.png" />');
+                    break;
+                case 71:$('#inputDiv').append('<img src="img/G.png" />');
+                    break;
+            }
+        });
+    }
+}
 
 class Game {
     playerBoard: Board;
-
+    iM:inputMogolWusug;
+    sendM:Function;
+    receiveM:Function;
+    messageNum:number = 0;
     constructor(public iosocket, player) {
         this.playerBoard = new Board($("#playerBoard")[0], this.iosocket, player);
         for(var i = 0; i<16; i++){
             $(this.playerBoard.xitars[0][i]).bind("moved", this.xitarListener);
             
         }
+        this.iM = new inputMogolWusug();
         var pb = this.playerBoard;
         this.iosocket.on('message',function(message){
             var num:number[] = message.toString().split(',');
+            pb.updateYbalt(num[0], 7 - num[1], num[2]);
             pb.removeOwnXitar(7 - num[1], num[2]);
             pb.cells[pb.xitars[1][num[0]].row][pb.xitars[1][num[0]].column].xitar = -1;
             pb.cells[pb.xitars[1][num[0]].row][pb.xitars[1][num[0]].column].xitarIndex = -1;
@@ -853,9 +931,35 @@ class Game {
             pb.cells[7 - num[1]][num[2]].xitarIndex = num[0];
             pb.xitars[1][num[0]].moveXitar(7-num[1], num[2]);
         });
+        this.receiveM = function(message){
+            //alert(message);
+            var sendM = document.createElement('div');
+            $('#message_M').append(sendM);
+            $(sendM).addClass('message_M');
+            sendM.style.left = (this.messageNum*41) + 'px';
+            console.log('qqqqqq:'+sendM.style.left);
+            this.messageNum++;
+            $(sendM).html(message);
+        }
+        
+        this.iosocket.on('sendM',$.proxy(this,'receiveM'));
+        
+        this.sendM = function(){
+            //alert('send');
+            var sendM = document.createElement('div');
+            $('#message_M').append(sendM);
+            $(sendM).addClass('message_M');
+            $(sendM).html($('#inputDiv').html());
+            sendM.style.left = (this.messageNum*41) + 'px';
+            console.log(sendM.style.left);
+            this.messageNum++;
+            this.iosocket.emit('sendM',$('#inputDiv').html());
+            $('#inputDiv').html('');
+        }
+        $('#send_botton').click(
+            $.proxy(this,'sendM')
+        );
     }
-
-
 
     private updateStatus(msg: string) {
         $("#status").slideUp('fast', function () {  // Slide out the old text
