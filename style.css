@@ -12,6 +12,7 @@ body {
     width: 100%;
     height: 100%;
     /*background-color: #b5caae;*/
+    background-image:url(../img/background.png);
     margin: 0px;
     border: 0px;
     padding: 0px;
@@ -27,6 +28,7 @@ body {
 	height:500px;
 	overflow-y:auto;
 	position:relative;
+	background-color:#fff;
 }
 .yablt{
 	width:20px;
@@ -59,11 +61,16 @@ body {
     left:230px;
 }
 .board {
-    background-color: #111111;
-    border: 2px groove black;
     height: 100%;
     padding: 0%;
     position: relative;
+}
+.board img.map{
+    width: 500px;
+    height: 500px;
+    position:absolute;
+    top:0px;
+    left:0px;
 }
 .cell {
     box-sizing: border-box;
@@ -71,16 +78,13 @@ body {
     float: left;
     height: 12.5%;
     width: 12.5%;
-    border: 1px dotted #A0A0FF;
     margin: 0px;
     padding: 0px;
     position: relative;
 }
 .nar {
-    background:  url('img/nar.jpg') repeat;
 }
 .sar {
-    background:  url('img/sar.jpg') repeat;
 }
 
 .xitar {
@@ -89,18 +93,19 @@ body {
     -moz-box-sizing: border-box;
     margin: 0%;
     padding: 0%;
-    width: 12.5%;
-    height: 12.5%;
+    width: 12%;
+    height: 12%;
     z-index: 1;
     -ms-touch-action: none;
 }
 #inputDiv{
 		border:1px #000 solid;
-		width:31px;
+		width:37px;
 	height:400px;
 	position:absolute;
 	top:40px;
 	left:760px;
+	background-color:#fff;
 }
 #inputDiv img, 
 .message_M img{
@@ -110,12 +115,13 @@ body {
 }
 #send_botton{
 		border:1px #000 solid;
-		width:31px;
-		height:80px;
+		width:27px;
+		height:70px;
+		padding:5px;
 	position:absolute;
 	top:450px;
 	left:760px;
-	background-color:#000;
+	background-color:#fff;
 	cursor:pointer;
 }
 #message_M{
@@ -124,11 +130,12 @@ body {
 		height:490px;
 	position:absolute;
 	top:40px;
-	left:800px;
+	left:810px;
 	overflow-y:auto;
+	background-color:#fff;
 }
 .message_M{
-	width:31px;
+	width:37px;
 	height:400px;
 	position:absolute;
 	top:10px;

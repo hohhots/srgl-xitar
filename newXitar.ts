@@ -176,7 +176,7 @@ class Xitar {
 class Bars extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Bars.gif");
+            $(this.element).attr("src","img/"+img+"Bars.png");
             $(this.element).addClass("xitar");
         
     }
@@ -263,7 +263,7 @@ class Bars extends Xitar {
 class Huu extends Xitar {
     constructor(public iosocket,img: String,public board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Huu.gif");
+            $(this.element).attr("src","img/"+img+"Huu.png");
             $(this.element).addClass("xitar");
         
     }
@@ -338,7 +338,7 @@ class Huu extends Xitar {
 class Hasag extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Hasag.gif");
+            $(this.element).attr("src","img/"+img+"Hasag.png");
             $(this.element).addClass("xitar");
         
     }
@@ -393,7 +393,7 @@ class Hasag extends Xitar {
 class Mori extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Mori.gif");
+            $(this.element).attr("src","img/"+img+"Mori.png");
             $(this.element).addClass("xitar");
         
     }
@@ -456,7 +456,7 @@ class Mori extends Xitar {
 class Teme extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Teme.gif");
+            $(this.element).attr("src","img/"+img+"Teme.png");
             $(this.element).addClass("xitar");
         
     }
@@ -513,7 +513,7 @@ class Teme extends Xitar {
 class Han extends Xitar {
     constructor(public iosocket, img: String, board:Board) {
         super(iosocket, board);
-            $(this.element).attr("src","img/"+img+"Han.gif");
+            $(this.element).attr("src","img/"+img+"Han.png");
             $(this.element).addClass("xitar");
         
     }
@@ -860,50 +860,118 @@ class Board {
 
 }
 class inputMogolWusug{
+    pre:number = 32;
+    keypress:Function;
     constructor(){
-        $(document).keypress(function(event){
+        this.keypress = function(event){
             console.log(event.which);
             switch(event.which){
-                case 97:$('#inputDiv').append('<img src="img/a.png" />');
+                case 65:
+                case 72:
+                case 71:
+                case 97:
+                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                    this.pre = event.which;
                     break;
-                case 98:$('#inputDiv').append('<img src="img/b.png" />');
+                case 110:
+                case 98:
+                case 112:
+                case 104:
+                case 103:
+                case 109:
+                case 108:
+                case 115:
+                case 120:
+                case 116:
+                case 100:
+                case 113:
+                case 106:
+                case 121:
+                case 114:
+                case 119:
+                    if(this.pre == 32){
+                        $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                    }else{
+                        $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                    }
+                    this.pre = event.which;
                     break;
-                case 100:$('#inputDiv').append('<img src="img/d.png" />');
+                case 78:
+                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                    this.pre = event.which;
                     break;
-                case 101:$('#inputDiv').append('<img src="img/e.png" />');
+                case 101:
+                case 105:
+                    switch(this.pre){
+                        case 98:
+                        case 112:
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'2.png" />');
+                            break;
+                        case 104:
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'3.png" />');
+                            break;
+                        default:
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                            break;
+                    }
+                    this.pre = event.which;
                     break;
-                case 103:$('#inputDiv').append('<img src="img/g.png" />');
+                case 111:
+                    switch(this.pre){
+                        case 98:
+                        case 112:
+                            $('#inputDiv img').last().remove();
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(this.pre)+'.png" />');
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'2.png" />');
+                            break;
+                        case 104:
+                            $('#inputDiv img').last().remove();
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(this.pre)+'.png" />');
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'3.png" />');
+                            break;
+                        default:
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                            break;
+                    }
+                    this.pre = event.which;
                     break;
-                case 104:$('#inputDiv').append('<img src="img/h.png" />');
+                case 32:
+                    switch(this.pre){
+                        case 110:
+                        case 98:
+                        case 103:
+                        case 109:
+                        case 108:
+                        case 115:
+                        case 121:
+                        case 114:
+                            $('#inputDiv img').last().remove();
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
+                            break;
+                    }
+                    $('#inputDiv').append('<img src="img/space.png" />');
+                    this.pre = event.which;
                     break;
-                case 105:$('#inputDiv').append('<img src="img/i.png" />');
-                    break;
-                case 106:$('#inputDiv').append('<img src="img/j.png" />');
-                    break;
-                case 107:$('#inputDiv').append('<img src="img/k.png" />');
-                    break;
-                case 108:$('#inputDiv').append('<img src="img/l.png" />');
-                    break;
-                case 109:$('#inputDiv').append('<img src="img/m.png" />');
-                    break;
-                case 110:$('#inputDiv').append('<img src="img/n.png" />');
-                    break;
-                case 111:$('#inputDiv').append('<img src="img/o.png" />');
-                    break;
-                case 112:$('#inputDiv').append('<img src="img/p.png" />');
-                    break;
-                case 114:$('#inputDiv').append('<img src="img/R.png" />');
-                    break;
-                case 115:$('#inputDiv').append('<img src="img/s.png" />');
-                    break;
-                case 65:$('#inputDiv').append('<img src="img/A.png" />');
-                    break;
-                case 120:$('#inputDiv').append('<img src="img/x.png" />');
-                    break;
-                case 71:$('#inputDiv').append('<img src="img/G.png" />');
+                case 69:
+                    switch(this.pre){
+                        case 110:
+                        case 98:
+                        case 103:
+                        case 109:
+                        case 108:
+                        case 115:
+                        case 121:
+                        case 114:
+                            $('#inputDiv img').last().remove();
+                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
+                            break;
+                    }
+                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                    this.pre = 32;
                     break;
             }
-        });
+        };
+        $(document).keypress($.proxy(this,'keypress'));
     }
 }
 
@@ -936,7 +1004,7 @@ class Game {
             var sendM = document.createElement('div');
             $('#message_M').append(sendM);
             $(sendM).addClass('message_M');
-            sendM.style.left = (this.messageNum*41) + 'px';
+            sendM.style.left = (this.messageNum*47) + 'px';
             console.log('qqqqqq:'+sendM.style.left);
             this.messageNum++;
             $(sendM).html(message);

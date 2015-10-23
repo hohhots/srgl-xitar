@@ -39,7 +39,9 @@ sio.on('connection',function(socket){
 	socket.on('sendM',function(msg){
 		console.log('Message Received :',msg);
 		//sio.sockets.emit('message',msg);
-		socket.broadcast.emit('sendM', msg);
+		if(msg != 'sendM'){
+			socket.broadcast.emit('sendM', msg);
+		}
 	});
 	socket.on('message',function(msg){
 		console.log('Message Received :',msg);
