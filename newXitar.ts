@@ -861,115 +861,83 @@ class Board {
 }
 class inputMogolWusug{
     pre:number = 32;
+    prePre:number = 32;
     keypress:Function;
     constructor(){
+        $('#inputDiv').append('<img src="img/cursor.gif" width="37" height="1" />');
         this.keypress = function(event){
             console.log(event.which);
             switch(event.which){
-                case 65:
-                case 72:
-                case 71:
-                case 97:
-                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
-                    this.pre = event.which;
-                    break;
-                case 110:
-                case 98:
-                case 112:
-                case 104:
-                case 103:
-                case 109:
-                case 108:
-                case 115:
-                case 120:
-                case 116:
-                case 100:
-                case 113:
-                case 106:
-                case 121:
-                case 114:
-                case 119:
+                case  110:
+                case  103:
+                case  109:
+                case  108:
+                case  115:
+                case  120:
+                case  116:
+                case  100:
+                case  113:
+                case  106:
+                case  121:
+                case  114:
+                case  119:
                     if(this.pre == 32){
-                        $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
+                    }else if(this.prePre != 32){
+                        $('#inputDiv img').last().prev().remove();
+                        if(this.prePre == 98 || this.prePre == 112 || this.prePre == 104){
+                            if(this.pre == 97 || this.pre == 101){
+                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.prePre)+'e1.png" />');
+                            }else if(this.pre == 111 || this.pre == 105){
+                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.prePre)+String.fromCharCode(this.pre)+'1.png" />');
+                            }else{
+                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
+                            }
+                        }
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
+                    }
+                    break;
+                case  101:
+                case  97:
+                    if(this.pre == 32){
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
+                    }else if(this.pre == 98 || this.pre == 112 || this.pre == 104){
+                        $('#inputDiv img').last().prev().remove();
+                        if(this.prePre == 32){
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'e.png" />');
+                        }else{
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'e6.png" />');
+                        }
                     }else{
-                        $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                        if(this.prePre != 32){
+                            $('#inputDiv img').last().prev().remove();
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
+                        }
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
                     }
-                    this.pre = event.which;
-                    break;
-                case 78:
-                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
-                    this.pre = event.which;
-                    break;
-                case 101:
-                case 105:
-                    switch(this.pre){
-                        case 98:
-                        case 112:
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'2.png" />');
-                            break;
-                        case 104:
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'3.png" />');
-                            break;
-                        default:
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
-                            break;
+                    break;                    
+                case  111:
+                case  105:
+                    if(this.pre == 32){
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
+                    }else if(this.pre == 98 || this.pre == 112 || this.pre == 104){
+                        $('#inputDiv img').last().prev().remove();
+                        if(this.prePre == 32){
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'.png" />');
+                        }else{
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'6.png" />');
+                        }
+                    }else{
+                        if(this.prePre != 32){
+                            $('#inputDiv img').last().prev().remove();
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
+                        }
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
                     }
-                    this.pre = event.which;
-                    break;
-                case 111:
-                    switch(this.pre){
-                        case 98:
-                        case 112:
-                            $('#inputDiv img').last().remove();
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(this.pre)+'.png" />');
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'2.png" />');
-                            break;
-                        case 104:
-                            $('#inputDiv img').last().remove();
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(this.pre)+'.png" />');
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'3.png" />');
-                            break;
-                        default:
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
-                            break;
-                    }
-                    this.pre = event.which;
-                    break;
-                case 32:
-                    switch(this.pre){
-                        case 110:
-                        case 98:
-                        case 103:
-                        case 109:
-                        case 108:
-                        case 115:
-                        case 121:
-                        case 114:
-                            $('#inputDiv img').last().remove();
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
-                            break;
-                    }
-                    $('#inputDiv').append('<img src="img/space.png" />');
-                    this.pre = event.which;
-                    break;
-                case 69:
-                    switch(this.pre){
-                        case 110:
-                        case 98:
-                        case 103:
-                        case 109:
-                        case 108:
-                        case 115:
-                        case 121:
-                        case 114:
-                            $('#inputDiv img').last().remove();
-                            $('#inputDiv').append('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
-                            break;
-                    }
-                    $('#inputDiv').append('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
-                    this.pre = 32;
                     break;
             }
+            this.prePre = this.pre;
+            this.pre = event.which;
         };
         $(document).keypress($.proxy(this,'keypress'));
     }
@@ -1014,15 +982,20 @@ class Game {
         
         this.sendM = function(){
             //alert('send');
-            var sendM = document.createElement('div');
-            $('#message_M').append(sendM);
-            $(sendM).addClass('message_M');
-            $(sendM).html($('#inputDiv').html());
-            sendM.style.left = (this.messageNum*41) + 'px';
-            console.log(sendM.style.left);
-            this.messageNum++;
-            this.iosocket.emit('sendM',$('#inputDiv').html());
-            $('#inputDiv').html('');
+            $('#inputDiv img').last().remove();
+            this.iM.prePre = 32;
+            this.iM.pre = 32;
+            if($('#inputDiv').html() != ''){
+                var sendM = document.createElement('div');
+                $('#message_M').append(sendM);
+                $(sendM).addClass('message_M');
+                $(sendM).html($('#inputDiv').html());
+                sendM.style.left = (this.messageNum*41) + 'px';
+                console.log(sendM.style.left);
+                this.messageNum++;
+                this.iosocket.emit('sendM',$('#inputDiv').html());
+            }
+            $('#inputDiv').html('<img src="img/cursor.gif" width="37" height="1" />');
         }
         $('#send_botton').click(
             $.proxy(this,'sendM')
