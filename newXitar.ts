@@ -862,18 +862,21 @@ class Board {
 class inputMogolWusug{
     pre:number = 32;
     prePre:number = 32;
-    keypress:Function;
+    keypressFun:Function;
     constructor(){
-        $('#inputDiv').append('<img id="cursor" src="img/cursor.gif" width="37" height="1" />');
-        this.keypress = function(event){
+        //$('#inputDiv').append('<img id="cursor" src="img/cursor.gif" width="37" height="1" />');
+        this.keypressFun = function(event){
             console.log(event.which);
             console.log('---'+this.pre+'+++');
             console.log('==='+this.prePre+'---');
             switch(event.which){
                 case  32:
-                    if(this.pre == 97 || this.pre == 105 || this.pre == 111 || this.pre == 109 || this.pre == 108 || this.pre == 115 || this.pre == 114 || this.pre == 103 || this.pre == 110 || this.pre == 98 || this.pre == 112 || this.pre == 104 || this.pre == 78){
+                    if(this.pre == 97 || this.pre == 105 || this.pre == 109 || this.pre == 108 || this.pre == 115 || this.pre == 114 || this.pre == 103 || this.pre == 110 || this.pre == 98 || this.pre == 112 || this.pre == 104 || this.pre == 78){
                         $('#inputDiv img').last().prev().remove();
                         $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
+                    }else if(this.pre == 111){
+                        $('#inputDiv img').last().prev().remove();
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(117)+'6.png" />');
                     }
                     $('#inputDiv img').last().before('<img src="img/space.png" />');
                     break;
@@ -911,7 +914,7 @@ class inputMogolWusug{
                         $('#inputDiv img').last().prev().remove();
                         $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'6.png" />');
                     }else{
-                        $('#inputDiv img').last().prev().remove();
+                        //$('#inputDiv img').last().prev().remove();
                         $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which).toLowerCase()+'6.png" />');
                     }
                     break;
@@ -962,7 +965,8 @@ class inputMogolWusug{
                 this.pre = 32;
             }
         };
-        $(document).keypress($.proxy(this,'keypress'));
+        $(document).unbind('keypress');
+        $(document).keypress($.proxy(this,'keypressFun'));
     }
 }
 
@@ -1018,7 +1022,7 @@ class Game {
                 this.messageNum++;
                 this.iosocket.emit('sendM',$('#inputDiv').html());
             }
-            $('#inputDiv').html('<img src="img/cursor.gif" width="37" height="1" />');
+            $('#inputDiv').html('<img id="cursor" src="img/cursor.gif" width="37" height="1" />');
         }
         $('#send_botton').click(
             $.proxy(this,'sendM')
