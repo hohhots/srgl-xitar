@@ -839,7 +839,7 @@ class Board {
         $(yabltNum).addClass('yabltNum');
         var img1:string = this.xitars[1][xitarIndex].cellYImg($(oldCell.element).data('cellY'));
         var img2:string = this.xitars[1][xitarIndex].cellYImg(cellY);
-        alert(img2 +':'+ cellY)
+        //alert(img2 +':'+ cellY)
         $(yablt).html(img1 + ($(oldCell.element).data('cellX')+1) +'<br />|<br />' +img2+ cellX1);
         $(yablt).trigger('create');
         $(yabltNum).html(''+ this.yabltNum);
@@ -864,80 +864,103 @@ class inputMogolWusug{
     prePre:number = 32;
     keypress:Function;
     constructor(){
-        $('#inputDiv').append('<img src="img/cursor.gif" width="37" height="1" />');
+        $('#inputDiv').append('<img id="cursor" src="img/cursor.gif" width="37" height="1" />');
         this.keypress = function(event){
             console.log(event.which);
+            console.log('---'+this.pre+'+++');
+            console.log('==='+this.prePre+'---');
             switch(event.which){
-                case  110:
-                case  103:
-                case  109:
-                case  108:
-                case  115:
-                case  120:
-                case  116:
-                case  100:
-                case  113:
-                case  106:
-                case  121:
-                case  114:
-                case  119:
-                    if(this.pre == 32){
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
-                    }else if(this.prePre != 32){
+                case  32:
+                    if(this.pre == 97 || this.pre == 105 || this.pre == 111 || this.pre == 109 || this.pre == 108 || this.pre == 115 || this.pre == 114 || this.pre == 103 || this.pre == 110 || this.pre == 98 || this.pre == 112 || this.pre == 104 || this.pre == 78){
                         $('#inputDiv img').last().prev().remove();
-                        if(this.prePre == 98 || this.prePre == 112 || this.prePre == 104){
-                            if(this.pre == 97 || this.pre == 101){
-                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.prePre)+'e1.png" />');
-                            }else if(this.pre == 111 || this.pre == 105){
-                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.prePre)+String.fromCharCode(this.pre)+'1.png" />');
-                            }else{
-                                $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
-                            }
-                        }
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
                     }
+                    $('#inputDiv img').last().before('<img src="img/space.png" />');
                     break;
-                case  101:
                 case  97:
                     if(this.pre == 32){
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
-                    }else if(this.pre == 98 || this.pre == 112 || this.pre == 104){
-                        $('#inputDiv img').last().prev().remove();
-                        if(this.prePre == 32){
-                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'e.png" />');
-                        }else{
-                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'e6.png" />');
-                        }
-                    }else{
-                        if(this.prePre != 32){
-                            $('#inputDiv img').last().prev().remove();
-                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
-                        }
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
-                    }
-                    break;                    
-                case  111:
-                case  105:
-                    if(this.pre == 32){
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');                        
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                        //$('#cursor').insertBefore('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
                     }else if(this.pre == 98 || this.pre == 112 || this.pre == 104){
                         $('#inputDiv img').last().prev().remove();
                         if(this.prePre == 32){
                             $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'.png" />');
                         }else{
-                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'6.png" />');
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'1.png" />');                            
                         }
                     }else{
-                        if(this.prePre != 32){
-                            $('#inputDiv img').last().prev().remove();
-                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'1.png" />');
-                        }
-                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
                     }
+                    break;
+                case  105:
+                case  111:
+                    if(this.pre == 98 || this.pre == 112 || this.pre == 104){
+                        $('#inputDiv img').last().prev().remove();
+                        if(this.prePre == 32){
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'.png" />');
+                        }else{
+                            $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'1.png" />');                            
+                        }
+                    }else{
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                    }
+                    break;
+                case  117:
+                case  73:
+                    if(this.pre == 98 || this.pre == 112 || this.pre == 104){
+                        $('#inputDiv img').last().prev().remove();
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+String.fromCharCode(event.which)+'6.png" />');
+                    }else{
+                        $('#inputDiv img').last().prev().remove();
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which).toLowerCase()+'6.png" />');
+                    }
+                    break;
+                case  69:
+                    if(this.pre == 111 || this.pre == 105 || this.pre == 97 || this.pre == 109 || this.pre == 108 || this.pre == 115 || this.pre == 114 || this.pre == 103 || this.pre == 110 || this.pre == 98 || this.pre == 104){
+                        $('#inputDiv img').last().prev().remove();
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(this.pre)+'6.png" />');
+                    }
+                    $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
+                    break;
+                case  109:
+                case  108:
+                case  115:
+                case  114:
+                case  103:
+                case  110:
+                case  98:
+                case  104:
+                //-------------------------------
+                case  112:
+                case  120:
+                case  100:
+                case  113:
+                case  106:
+                case  121:
+                    if(this.pre == 32){
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                    }else{
+                        $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                    }
+                    break;
+                case  116:
+                case  72:
+                    $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'.png" />');
+                    break;
+                case  78:
+                    $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'1.png" />');
+                    break;
+                case  101:
+                case  71:
+                    $('#inputDiv img').last().before('<img src="img/'+String.fromCharCode(event.which)+'6.png" />');
                     break;
             }
             this.prePre = this.pre;
-            this.pre = event.which;
+            if(event.which != 69){
+                this.pre = event.which;
+            }else{
+                this.pre = 32;
+            }
         };
         $(document).keypress($.proxy(this,'keypress'));
     }
